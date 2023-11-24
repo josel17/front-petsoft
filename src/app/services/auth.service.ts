@@ -2,9 +2,12 @@ import { inject, Injectable, computed, signal } from '@angular/core';
 import { environment } from '../environments/environments';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, map, catchError, of, throwError } from 'rxjs';
-import { Response, AuthStatus,User,Request, CheckTokenResponse, ResponseService} from '../interfaces';
+import { Response, AuthStatus,Request, ResponseService} from '../interfaces';
 import { CryptographyService } from './cryptography.service';
 import { Router } from '@angular/router';
+import { DataLogin,User,DataStatus, Menu } from '../interfaces';
+
+
 
 
 @Injectable({
@@ -16,12 +19,12 @@ export class AuthService {
   private http = inject( HttpClient);
   private cryptoService = inject(CryptographyService);
 
+
   private _currentUser = signal<User|null>(null)
   private _authStatus = signal<AuthStatus>(AuthStatus.checking);
-  private _response = signal<Response|null>(null);
   private _request = signal<Request|null>(null);
-  private router = inject(Router);
 
+  
   public currentUser = computed(() => this._currentUser());
   public authStatus = computed(() => this._authStatus());
   public Request = computed(() => this._request());
@@ -34,21 +37,23 @@ export class AuthService {
     const url = `${this.baseUrl}/auth/login`;
     const body = ({bodyData});
  
-    return this.http.post<ResponseService>(url,body)
+    return this.http.post<string>(url,body)
     .pipe(
-      tap(({jsonResponse}) => {
-        const response:Response =JSON.parse( this.cryptoService.decrypt(jsonResponse));
+      map((res) => {
+        const response:Response<DataLogin> =JSON.parse( this.cryptoService.decrypt(res));
         this._currentUser.set(response.data.user)
         this._authStatus.set(AuthStatus.authenticated);
        localStorage.setItem('token',response.data.token)
-      }
+       return true
+      }),
+      tap((res) => {true}
       ),
-      map(() => true),
       //todo errores
-      
-        catchError(err => throwError(() => {
-          console.log(err)
-        } ))
+      catchError(err => throwError(() => {
+        const response:Response<DataLogin> =JSON.parse( this.cryptoService.decrypt(err.error));
+        console.log(err);
+        return(response);
+      } ))
       )}
 
   checkAuthStatus():Observable<boolean>
@@ -63,13 +68,14 @@ export class AuthService {
       const headers = new  HttpHeaders()
       .set('Authorization',`Bearer ${token}`);
 
-      return this.http.get<ResponseService>(url, {headers}).
+      return this.http.get<string>(url, {headers}).
       pipe(
         tap(() => true),
-        map(({jsonResponse}) =>
+        
+        map((jsonResponse) =>    
         {
 
-          const responseToken:Response =JSON.parse(this.cryptoService.decrypt(jsonResponse));
+          const responseToken:Response<DataStatus> =JSON.parse(this.cryptoService.decrypt(jsonResponse));
           this._authStatus.set(AuthStatus.authenticated);
           this._currentUser.set(responseToken.data.user);
           localStorage.setItem('company', JSON.stringify(responseToken.data.company));

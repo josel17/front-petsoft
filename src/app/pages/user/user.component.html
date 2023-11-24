@@ -2,96 +2,214 @@
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title">{{title}}</h3>
+           <div class="col-12">
+            <!-- general form elements -->
+          
+              
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title col-lg-3">{{title}}</h3>
+                    <div class="col-lg-2 float-right" >
+                        <button (click)="nuevo()" type="reset" class="btn btn-outline-primary btn-block btn-md" data-toggle="modal" data-target="#modal-xl"><i class="fa fa-plus"></i> Nuevo</button>
                     </div>
-                    
-                    <form (ngSubmit)="save()" [formGroup]="userForm"  autocomplete="off"> 
+                </div>
+                <div class="card-body">
+                    <div id="example2_wrapper" class="">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="container">
+                                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-bordered table-striped table-hover" id="tableUser">
+                                            <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nombre</th>
+                                                <th>Documento</th>
+                                                <th>Email</th>
+                                                <th>Celular</th>
+                                                <th>Address</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr *ngFor="let user of userList()">
+                                                <td>{{ user.id }}</td>
+                                                <td>{{ user.fullName }}{{ user.lastName1 }}</td>
+                                                <td>{{ user.documentType.code }}{{ user.documentNumber }}</td>
+                                                <td>{{ user.email }}</td>
+                                                <td>{{ user.phoneNumber }}</td>
+                                                <td>{{ user.company.name }}</td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <div><i (click)="editUser(user)" style="cursor: pointer;" class="btn-sm text-success fa fa-edit" id="{{user.id}}"></i></div>
+                                                        <div><i (click)="disable(user)" style="cursor: pointer;" class="btn-sm text-danger fa fa-trash"></i></div>
+                                                        <div><i (click)="editUser(user)" style="cursor: pointer;" class="btn-sm text-info fa fa-eye"></i></div>
+                                                    </div>
+                                                    
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <!-- Aquí irá el spinner -->
+                                                <tr *ngIf="isLoadingTable">
+                                                  <td colspan="7" class="spinner-container text-center">
+                                                    <div class="lds-ripple"><div></div><div></div></div>
+                                                  </td>
+                                                </tr>
+                                              </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>       
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-xl">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <form (ngSubmit)="save()" [formGroup]="userForm"  autocomplete="off"> 
+                <div class="modal-header">
+                 <h4 class="modal-title">{{title}}<input type="text" formControlName="id" value="user?.id" [ngModel]="user?.id"></h4>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                
+                
+                <div class="modal-body">
                         <div class="card-body">
                             <div class="row" id="form-document">
                                 <div class="col-lg-3 col-md-3 col-sm-12 ">
                                     <div class="form-group">
                                         <p>Tipo de Documento:</p>
-                                        <select class="form-control" id="documentType" formControlName="documentTypeId">
-                                            <option value="0">Seleccione...</option>
+                                        <select class="form-control form-control-sm" 
+                                        [ngClass]="validClass('documentTypeId')" 
+                                         formControlName="documentTypeId" [ngModel]="user?.documentType?.id">
+                                            <option [ngValue]="" disabled selected>Seleccione</option>
+                                            <option *ngFor="let item of selects()?.documentType" [ngValue]="item.id">{{item.code}} : {{item.name}}</option>
                                         </select>
+                                        <span *ngIf="isValidField('documentTypeId')"
+                                        class="error invalid-feedback  is-invalid">{{getFieldError('documentTypeId')}}</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-12 ">
                                     <div class="form-group">
                                         <p>Numero de Documento:</p>
-                                        <input type="number" class="form-control" id="document" placeholder="Numero de documento">
+                                        <input type="text" class="form-control form-control-sm" 
+                                        [ngClass]="validClass('documentNumber')" 
+                                        id="documentNumber" placeholder="Numero de documento" formControlName="documentNumber" [ngModel]="user?.documentNumber">
+                                        <span *ngIf="isValidField('documentNumber')" class="error invalid-feedback is-invalid">{{getFieldError('documentNumber')}}</span>
                                     </div>
                                 </div>
                             </div>
                             <hr>
-                            <div class="row" id="form-controls">
+                            <div class="row" id="form-control form-control-sms">
                                 <div class="row col-lg-12 col-md-12 col-sm-12">
                                     <div class="col-lg-3 col-md-3 col-sm-12 ">
                                         <div class="form-group">
-                                            <p>Primer Nombre:</p>
-                                            <input type="text" class="form-control" id="p_nombre" placeholder="Primer Nombre">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-12 ">
-                                        <div class="form-group">
-                                            <p>Segundo Nombre:</p>
-                                            <input type="text" class="form-control" id="s_nombre" placeholder="Segundo Nombre">
+                                            <p>Nombre:</p>
+                                            <input type="text" class="form-control form-control-sm" 
+                                            [ngClass]="validClass('fullName')" 
+                                            id="fullName" placeholder="Nombre" formControlName="fullName" [ngModel]="user?.fullName">
+                                            <span *ngIf="isValidField('fullName')" class="error invalid-feedback  is-invalid">{{getFieldError('fullName')}}</span>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 ">
                                         <div class="form-group">
                                             <p>Primer Apellido:</p>
-                                            <input type="text" class="form-control" id="p_apellido" placeholder="Primer Apellido">
+                                            <input type="text" class="form-control form-control-sm"
+                                            [ngClass]="validClass('lastName1')" 
+                                            id="lastName1" placeholder="Primer Apellido" formControlName="lastName1" [ngModel]="user?.lastName1">
+                                            <span *ngIf="isValidField('lastName1')" class="error invalid-feedback  is-invalid">{{getFieldError('lastName1')}}</span>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 ">
                                         <div class="form-group">
                                             <p>Segundo Apellido:</p>
-                                            <input type="text" class="form-control" id="s_apellido" placeholder="Segundo Apellido">
+                                            <input type="text" class="form-control form-control-sm" 
+                                            [ngClass]="{'is-valid': userForm.controls['lastName2'].touched}" 
+                                            id="lastName2" placeholder="Segundo Apellido" formControlName="lastName2"[ngModel]="user?.lastName2">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-12 ">
+                                        <div class="form-group">
+                                            <p>Genero:</p>
+                                            <select class="form-control form-control-sm" 
+                                            [ngClass]="validClass('genderId')" 
+                                            id="genderId" formControlName="genderId" [ngModel]="user?.gender?.id" >
+                                            <option [ngValue]="" disabled selected>Seleccione</option>
+                                                <option *ngFor="let item of selects()?.gender" value="{{item.id}}">{{item.name}}</option>
+                                            </select>
+                                            <span *ngIf="isValidField('genderId')"
+                                            class="error invalid-feedback  is-invalid">{{getFieldError('genderId')}}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row col-lg-12 col-md-12 col-sm-12">
                                     <div class="col-lg-3 col-md-3 col-sm-12 ">
-                                        <div class="form-group">
-                                            <p>Genero:</p>
-                                            <select class="form-control" id="documentType">
-                                                <option value="0">Seleccione...</option>
-                                            </select>
+                                        <div class="form-group">    
+                                            <p>Email:</p>
+                                            <input type="email" class="form-control form-control-sm" 
+                                            [ngClass]="validClass('email')" 
+                                            id="email" placeholder="Email" formControlName="email" [ngModel]="user?.email">
+                                            <span *ngIf="isValidField('email')"
+                                            class="error invalid-feedback is-invalid">{{getFieldError('email')}}</span>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 ">
                                         <div class="form-group">
-                                            <p>Email:</p>
-                                            <input type="text" class="form-control" id="email" placeholder="Segundo Nombre">
+                                            <p>Numero de contacto:</p>
+                                            <input type="number" class="form-control form-control-sm" 
+                                            [ngClass]="validClass('phoneNumber')" 
+                                            id="phoneNumber" placeholder="Numero de contacto" formControlName="phoneNumber" [ngModel]="user?.phoneNumber">
+                                            <span *ngIf="isValidField('phoneNumber')" class="error invalid-feedback is-invalid">{{getFieldError('phoneNumber')}}</span>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 ">
                                         <div class="form-group">
                                             <p>Compañia:</p>
-                                            <select class="form-control" id="documentType">
-                                                <option value="0">Seleccione...</option>
+                                            <select class="form-control form-control-sm" 
+                                            [ngClass]="validClass('companyId')" 
+                                            id="companyId" formControlName="companyId" [ngModel]="user?.company?.id">
+                                            <option [ngValue]="" disabled selected>Seleccione</option>
+                                            <option *ngFor="let item of selects()?.company" value="{{item.id}}">{{item.name}}</option>
                                             </select>
+                                            <span *ngIf="isValidField('companyId')"
+                                            class="error invalid-feedback  is-invalid">{{getFieldError('companyId')}}</span>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12 ">
                                         <div class="form-group">
-                                            <p>Estado:</p>
-                                            <input type="text" class="form-control" id="status" placeholder="Segundo Apellido">
+                                            <p>Estado</p>
+                                            <select class="form-control form-control-sm" 
+                                            [ngClass]="validClass('status')" 
+                                            id="status" formControlName="status" [ngModel]="user?.status?.id">
+                                            <option [ngValue]="" disabled selected>Seleccione</option>
+                                            <option *ngFor="let item of selects()?.status" value="{{item.id}}">{{item.name}}</option>
+                                            </select>
+                                            <span *ngIf="isValidField('status')"
+                                            class="error invalid-feedback  is-invalid">{{getFieldError('status')}}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
-                    </form>
                 </div>
-            </div>
+                <div class="modal-footer justify-content-between">
+                <button (click)="resetForm()" type="reset" class="btn btn-default" data-dismiss="modal">Close</button>
+                <!--<button type="submit" class="btn btn-primary">{{labelBtn}}</button>-->
+                <button class="btn btn-primary" type="submit">
+                    <span *ngIf="isSavingUSer" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="visually-hidden"> {{labelBtn}}</span>
+                  </button>
+                </div>
+            </form>
+          </div>
+          <!-- /.modal-content -->
         </div>
-    </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <div #openbutton data-toggle="modal" data-target="#modal-xl"></div>
 </section>

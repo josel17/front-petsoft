@@ -7,7 +7,9 @@ import { PetComponent } from './pet/pet.component';
 import { PagesComponent } from './pages.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
-
+import { DataTablesModule } from 'angular-datatables';
+import { UtilModule } from '../util/util.module';
+import { SpinnerComponent } from '../util/spinner/spinner.component';
 
 
 @NgModule({
@@ -21,7 +23,9 @@ import { SharedModule } from '../shared/shared.module';
     CommonModule,
     RouterModule,
     SharedModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DataTablesModule,
+    UtilModule
   ],
   exports:[
     DashboardComponent,

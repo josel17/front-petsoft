@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { User } from 'src/app/interfaces';
+import { Menu, User } from 'src/app/interfaces';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,7 +10,7 @@ import { User } from 'src/app/interfaces';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  menuItems?:any[];
+  
  
   
   public authService = inject(AuthService);
@@ -18,11 +18,15 @@ export class SidebarComponent {
   
   public user = this.authService.currentUser();
   public currentUser:User|null = this.user;
-  public open:string = 'menu-is-opening menu-open';
-  public userName = this.currentUser?.first_name+" "+this.currentUser?.last_name_1;
+  public userName = this.currentUser?.full_name+" "+this.currentUser?.last_name_1;
   
+  private menuItems:Menu[]|undefined =this.user?.menu;
   constructor(){
-    this.menuItems = this.sidebarService.menu;
-   
+    
+  }  
+  
+  get menuItem()
+  {
+    return this.menuItems;
   }
 }

@@ -41,12 +41,12 @@ export class LoginComponent {
    
     this.authService.login(data)
     .subscribe({
-      next: (() =>{
-        const url:string|null = localStorage.getItem('url') === null || localStorage.getItem('url') === '/' ? '/dashboard': localStorage.getItem('url') ;
+      next: ((res) =>{
+        const url:string|null = localStorage.getItem('url') === null || localStorage.getItem('url') === '/' || localStorage.getItem('url') === '' ? '/dashboard': localStorage.getItem('url') ;
         this.router.navigateByUrl(`${url}`)
       }), 
       error: (error) => {
-        if(error.statusCode)
+        if(error.status)
         {
           Swal.fire(error.message,error.errorMessage,'error');
         }else{

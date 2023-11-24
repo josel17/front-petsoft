@@ -36,14 +36,14 @@
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
     
-        <li class="nav-item" *ngFor="let item of menuItems">
+        <li class="nav-item" *ngFor="let item of menuItem">
           <a [routerLink]="item.url" class="nav-link"  style="cursor: pointer;">
             <i class="nav-icon fas {{item.icon}}"></i>
             <p>{{item.title}}
-              <i class="right fas fa-angle-left" *ngIf="item.level2.length > 0"></i>
+             <!-- <i class="right fas fa-angle-left"></i>-->
             </p>
           </a>
-          <ul class="nav nav-treeview" *ngFor="let sub of item.level2">
+         <!-- <ul class="nav nav-treeview" *ngFor="let sub of item.level2">
             <li class="nav-item">
               <a [routerLink]="sub.url" class="nav-link"  style="cursor: pointer;">
                 <i class="far {{sub.icon}} nav-icon"></i>
@@ -59,7 +59,7 @@
                   </a>
               </ul>
             </li>
-          </ul>
+          </ul>-->
         </li>
       </ul>
     </nav>

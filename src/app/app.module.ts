@@ -7,12 +7,15 @@ import { PagesModule } from './pages/pages.module';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SpinnerComponent } from './util/spinner/spinner.component';
+import { SharedService } from './services/shared-services.service';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    NopageFoundComponent
+    NopageFoundComponent,
+    SpinnerComponent
   ],
   imports: [
     BrowserModule,
@@ -22,7 +25,11 @@ import { ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  exports:
+  [
+    SpinnerComponent
+  ],
+  providers: [SharedService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

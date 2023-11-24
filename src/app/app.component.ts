@@ -1,19 +1,32 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { AuthStatus } from './interfaces';
 import { Router } from '@angular/router';
+import { SharedService } from './services/shared-services.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+ 
   public  title: string  = 'PetSoft';
-
+  
   private router = inject(Router);
   private authService = inject( AuthService);
+  private sharedServices = inject(SharedService);
+  public showSpinner:boolean =false;
 
+  ngOnInit(): void {
+    
+   }
+   constructor()
+   {
+     this.showSpinner = this.sharedServices.getShowSpinner();
+
+  }
+  
   public finishedAuthCheck = computed<boolean>(() => 
   {
     console.log(this.authService.authStatus());
@@ -45,4 +58,7 @@ export class AppComponent {
         break;
     }
   });
+
+  
+
 }
